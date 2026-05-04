@@ -1,0 +1,61 @@
+# ============================================================
+# InsureLife Analytics — PROD Environment Config
+# Only values that differ from dev are changed here
+# ============================================================
+
+environment: prod
+project_name: InsureLife Analytics
+
+storage:
+  account: adlsstorage44
+  container: lifeinsuranceproject
+  paths:
+    landing:    "abfss://lifeinsuranceproject@adlsstorage44.dfs.core.windows.net/landing"
+    checkpoint: "abfss://lifeinsuranceproject@adlsstorage44.dfs.core.windows.net/_dlt_checkpoints"
+    schema_loc: "abfss://lifeinsuranceproject@adlsstorage44.dfs.core.windows.net/_autoloader_schemas"
+    sources:
+      customers: "abfss://lifeinsuranceproject@adlsstorage44.dfs.core.windows.net/landing/customers/"
+      agents:    "abfss://lifeinsuranceproject@adlsstorage44.dfs.core.windows.net/landing/agents/"
+      policies:  "abfss://lifeinsuranceproject@adlsstorage44.dfs.core.windows.net/landing/policies/"
+      claims:    "abfss://lifeinsuranceproject@adlsstorage44.dfs.core.windows.net/landing/claims/"
+      payments:  "abfss://lifeinsuranceproject@adlsstorage44.dfs.core.windows.net/landing/payments/"
+
+catalog:
+  name: insurelife_catalog
+  schemas:
+    bronze:     insurelife_catalog.bronze
+    silver:     insurelife_catalog.silver
+    gold:       insurelife_catalog.gold
+    governance: insurelife_catalog.governance
+  tables:
+    bronze:
+      customers: insurelife_catalog.bronze.customers
+      agents:    insurelife_catalog.bronze.agents
+      policies:  insurelife_catalog.bronze.policies
+      claims:    insurelife_catalog.bronze.claims
+      payments:  insurelife_catalog.bronze.payments
+    silver:
+      customers: insurelife_catalog.silver.customers
+      agents:    insurelife_catalog.silver.agents
+      policies:  insurelife_catalog.silver.policies
+      claims:    insurelife_catalog.silver.claims
+      payments:  insurelife_catalog.silver.payments
+    gold:
+      policy_portfolio:  insurelife_catalog.gold.policy_portfolio
+      monthly_premium:   insurelife_catalog.gold.monthly_premium
+      claims_analysis:   insurelife_catalog.gold.claims_analysis
+      customer_360:      insurelife_catalog.gold.customer_360
+      agent_performance: insurelife_catalog.gold.agent_performance
+
+pipeline:
+  name: InsureLife_DLT_Pipeline
+  mode: triggered
+  optimize_on_run: true        # ← OPTIMIZE runs in prod
+  vacuum_retention_hours: 168  # ← 7 days retention in prod
+
+sharing:
+  shares:
+    - name: reinsurance_partner_share
+      recipient: reinsurance_co
+    - name: regulator_share
+      recipient: irdai_regulator
